@@ -22,12 +22,6 @@ venv/
 .env
 
 # -------------------
-# AI Model files (optional)
-# -------------------
-*.pth
-*.pt
-
-# -------------------
 # Uploads
 # -------------------
 server/uploads/
@@ -47,4 +41,3 @@ Thumbs.db
 # VS Code
 # -------------------
 .vscode/
-REMOVE *.pth from .gitignore
