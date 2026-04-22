@@ -3,12 +3,6 @@ import path from "path";
 
 /*
 Controller: detectImage
-
-Steps
-1. Receive uploaded image from multer
-2. Send image path to Python AI model
-3. Python returns prediction JSON
-4. Send response back to frontend
 */
 
 export const detectImage = async (req, res) => {
@@ -22,20 +16,21 @@ export const detectImage = async (req, res) => {
     const imagePath = req.file.path;
 
     /*
-    Path to Python model
+    Correct path for model.py
+    Works both locally + on Render
     */
-    const pythonScript = path.join(process.cwd(), "../ai-model/model.py");
+    const pythonScript = path.join(process.cwd(), "..", "ai-model", "model.py");
 
     /*
-    Spawn Python process
+    IMPORTANT: Use python3 for deployment (Render)
     */
-    const pythonProcess = spawn("python", [pythonScript, imagePath]);
+    const pythonCommand =
+      process.env.NODE_ENV === "production" ? "python3" : "python";
+
+    const pythonProcess = spawn(pythonCommand, [pythonScript, imagePath]);
 
     let resultData = "";
 
-    /*
-    Collect output from Python
-    */
     pythonProcess.stdout.on("data", (data) => {
       resultData += data.toString();
     });
@@ -44,9 +39,6 @@ export const detectImage = async (req, res) => {
       console.error("Python error:", data.toString());
     });
 
-    /*
-    When Python process finishes
-    */
     pythonProcess.on("close", () => {
       try {
         const result = JSON.parse(resultData);
@@ -57,6 +49,7 @@ export const detectImage = async (req, res) => {
           explanation: result.explanation,
         });
       } catch (err) {
+        console.error(err);
         res.status(500).json({
           error: "Failed to parse AI model response",
         });
