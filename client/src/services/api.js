@@ -4,7 +4,7 @@ import axios from "axios";
 Create Axios instance for API calls
 */
 const api = axios.create({
-  baseURL: "http://localhost:5000", // backend server
+  baseURL: "https://ai-image-detector-6xwe.onrender.com", // backend server
 });
 
 /*
